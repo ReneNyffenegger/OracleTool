@@ -27,7 +27,7 @@ use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 @ISA          = qw(Exporter);
 $VERSION      = 0.01;
 @EXPORT       = qw();
-@EXPORT_OK    = qw(connect_db describe_table);
+@EXPORT_OK    = qw(connect_db describe_table username);
 %EXPORT_TAGS  = ();
 
 use DBD::Oracle;
@@ -61,6 +61,22 @@ Connects to an Oracle databse, returns a C<DBI::db> object.
 
   return $dbh;
   
+} # }}}
+
+sub username { # {{{
+
+=head2 C<connect_db>
+
+returns the username part of a connection string
+
+ my $user  = username('someUser/password@somewhere'); // return 'someUser'
+
+=cut
+
+  my $logon = shift;
+  my ($username, $password, $db) = $logon =~ m!(.*)/(.[^@]*)@?(.*)!;
+  return $username;
+
 } # }}}
 
 sub describe_table { # {{{
