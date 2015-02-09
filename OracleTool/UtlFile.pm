@@ -79,7 +79,7 @@ sub get_line { # {{{
 
     $_[0] = $line;
 
-    return $eof;
+    return 1-$eof;
 
 } # }}}
 

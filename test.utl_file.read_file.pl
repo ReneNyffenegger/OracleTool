@@ -15,10 +15,10 @@ create_a_file();
 my $utl_file =  OracleTool::UtlFile->fopen($dbh, 'TEST_TEMP', 'test.txt', 'r');
 
 my $line;
-die if     $utl_file -> get_line($line); die unless $line eq 'First line';
-die if     $utl_file -> get_line($line); die unless $line eq 'Second line';
-die if     $utl_file -> get_line($line); die unless $line eq 'Third line';
-die unless $utl_file -> get_line($line);
+die unless $utl_file -> get_line($line); die unless $line eq 'First line';
+die unless $utl_file -> get_line($line); die unless $line eq 'Second line';
+die unless $utl_file -> get_line($line); die unless $line eq 'Third line';
+die if     $utl_file -> get_line($line);
 
 $dbh -> do("drop directory TEST_TEMP");
 $dbh -> rollback;

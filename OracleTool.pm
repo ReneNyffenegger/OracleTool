@@ -25,12 +25,14 @@ use Exporter;
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 
 @ISA          = qw(Exporter);
-$VERSION      = 0.01;
+$VERSION      = 0.02;
 @EXPORT       = qw();
-@EXPORT_OK    = qw(connect_db describe_table username);
+@EXPORT_OK    = qw(connect_db describe_table username utl_file_get);
 %EXPORT_TAGS  = ();
 
 use DBD::Oracle;
+
+use OracleTool::UtlFile;
 
 =head1 FUNCTIONS
 =cut
@@ -209,6 +211,25 @@ Describes a table.
 
   return $ret;
 
+} # }}}
+
+sub utl_file_get { # {{{
+
+    my $dbh            = shift;
+    my $directory_name = shift;
+    my $file_name      = shift;
+
+    my $line;
+    my $ret  ='';
+
+    my $utl_file = OracleTool::UtlFile -> fopen($dbh, $directory_name, $file_name, 'r');
+    while ($utl_file->get_line($line)) {
+      $ret .= "\n" if $ret;
+      $ret .= $line;
+    }
+
+    return $ret;
+    
 } # }}}
 
 sub error_handler { # {{{
