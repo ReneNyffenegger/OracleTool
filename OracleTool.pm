@@ -60,6 +60,7 @@ Connects to an Oracle databse, returns a C<DBI::db> object.
   $dbh->{AutoCommit} = 0;
   $dbh->{HandleError} = \&error_handler;
   $dbh->{PrintError} = 0;
+  $dbh->{LongReadLen} = 32000; # the default of 80 is way too small, I think
 
   return $dbh;
   
