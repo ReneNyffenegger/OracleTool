@@ -27,7 +27,12 @@ use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 @ISA          = qw(Exporter);
 $VERSION      = 0.02;
 @EXPORT       = qw();
-@EXPORT_OK    = qw(connect_db describe_table username utl_file_get);
+@EXPORT_OK    = qw(
+                  connect_db
+                  describe_table
+                  sequence_nextval
+                  username
+                  utl_file_get);
 %EXPORT_TAGS  = ();
 
 use DBD::Oracle;
@@ -230,6 +235,49 @@ sub utl_file_get { # {{{
     }
 
     return $ret;
+    
+} # }}}
+
+sub sequence_nextval { # {{{
+
+    my $dbh      = shift;
+    my $sequence = shift;
+    my $nextval  = shift;  
+
+    my $owner='';
+
+   ($owner, $sequence) = split /\./, $sequence if $sequence =~ /\./;
+
+    $owner    = uc $owner;
+    $sequence = uc $sequence;
+
+
+
+    $dbh -> do (qq{
+
+      declare
+        inc_orig number;
+        inc_new  number;
+        own      varchar2(30);
+        nv       number := $sequence.nextval;
+      begin
+ 
+        select sequence_owner, increment_by into own, inc_orig
+          from all_sequences
+         where sequence_owner = nvl('$owner', user) and
+               sequence_name  = '$sequence';
+
+        inc_new := $nextval - nv - inc_orig;
+        execute immediate 'alter sequence ' || own || '.' || '$sequence' || ' increment by ' || inc_new;
+        execute immediate 'select ' || own || '.$sequence.nextval from dual' into nv;
+        execute immediate 'alter sequence ' || own || '.' || '$sequence' || ' increment by ' || inc_orig;
+
+      end;
+
+
+    });
+     
+
     
 } # }}}
 
